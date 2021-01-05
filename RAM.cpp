@@ -7,7 +7,7 @@ using namespace std;
 #define Busy 1		//已用状态标识符
 #define ERROR 0		//错误标识符
 #define OK 1		//完成标识符
-#define MaxLength 640 //最大内存空间为640KB
+#define MaxLength 8192 //最大内存空间为640KB
 typedef int Status;
 bool flag;
 
@@ -29,7 +29,7 @@ int main()
 {
 	int op;					//算法选择标记
 	cout << "请输入所使用的内存分配算法：\n";
-	cout << "(1)首次适应算法\n(2)最佳适应算法\n(3)最差适应算法\n";
+	cout << "1.首次适应算法\n2.最佳适应算法\n3.最差适应算法\n";
 
 	cin >> op;
 	while (op < 1 || op>3)
@@ -76,19 +76,19 @@ void Show()
 {
 	int number = 0;
 	cout << "\n主存分配情况:\n";
-	cout << "----------------------------------------------\n";
-	cout << "分区号\t起始地址\t分区大小\t状态\n\n";
+	cout << "*---------------------------------------------*\n";
+	cout << "*分区号\t起始地址\t分区大小\t状态  *\n\n";
 	for (list<node>::iterator i = RAMList.begin(); i != RAMList.end(); ++i)
 	{
-		cout << "  " << number++ << "\t";
-		cout << "  " << (*i).address << "\t\t";
+		cout << "* " << number++ << "\t";
+		cout << " " << (*i).address << "\t\t";
 		cout << " " << (*i).size << "KB\t\t";
 		if ((*i).state == Free)
-			cout << "空闲\n\n";
+			cout << "空闲  *\n\n";
 		else
-			cout << "已分配\n\n";
+			cout << "已分配*\n\n";
 	}
-	cout << "----------------------------------------------\n\n";
+	cout << "*---------------------------------------------*\n\n";
 }
 
 Status AllocBlock(int op) {
@@ -198,7 +198,7 @@ Status FirstFit(int request) {
 Status BestFit(int request) {
 	list<node>::iterator best = RAMList.end();
 	for (list<node>::iterator it = RAMList.begin(); it != RAMList.end(); ++it) {
-		if (it->state == Free && it->size > request) {
+		if (it->state == Free && it->size >= request) {
 			if (best == RAMList.end()) {
 				best = it;
 			}
@@ -217,12 +217,15 @@ Status BestFit(int request) {
 	best->address += temp->size;
 	best->size -= temp->size;
 	RAMList.insert(best, *temp);
+	if (best->size == 0) {
+		RAMList.erase(best);
+	}
 	return OK;
 }
 Status WorstFit(int request) {
 	list<node>::iterator worst = RAMList.end();
 	for (list<node>::iterator it = RAMList.begin(); it != RAMList.end(); ++it) {
-		if (it->state == Free && it->size > request) {
+		if (it->state == Free && it->size >= request) {
 			if (worst == RAMList.end()) {
 				worst = it;
 			}
@@ -241,5 +244,8 @@ Status WorstFit(int request) {
 	worst->address += temp->size;
 	worst->size -= temp->size;
 	RAMList.insert(worst, *temp);
+	if (worst->size == 0) {
+		RAMList.erase(worst);
+	}
 	return OK;
 }

@@ -18,7 +18,6 @@ void Output(int n, float t1, float t2);
 void Show(int i);
 void FCFS(int n, float& t1, float& t2);		//先来先服务算法
 void SJF(int n, float& t1, float& t2);		//短作业优先算法
-void Priority(int n, float& t1, float& t2);	//优先级调度算法
 bool cmp1(PCB a, PCB b) {
 	return a.ArriveTime < b.ArriveTime;
 }
@@ -52,13 +51,6 @@ int main()
 			SJF(n, roundtime, weightime);		//短作业优先
 			Output(n, roundtime, weightime);
 		}
-		else if (select == 3) {
-			printf("\n\n=================优先级算法================\n\n");
-			Input(n);
-			sort(arr, arr + n, cmp2);			//按服务时间排序
-			Priority(n, roundtime, weightime);	//优先级算法
-			Output(n, roundtime, weightime);
-		}
 		else if (select == 0) {
 			exit(0);
 		}
@@ -76,7 +68,6 @@ void Menu() {
 	printf("请选择算法：\n");
 	printf("1.先来先服务算法\n");
 	printf("2.短作业优先算法\n");
-	printf("3.优先级算法\n");
 	printf("0.退出程序\n");
 	printf("请选择序号:");
 }
@@ -156,40 +147,6 @@ void SJF(int n, float& t1, float& t2)
 			}
 		}
 		if (arr[i].ArriveTime < arr[i - 1].FinishTime) {		//当前到达时间在上一个作业结束时间之前
-			arr[i].FinishTime = arr[i - 1].FinishTime + arr[i].ServerTime;	//完成时间=上一个完成时间+服务时间
-			arr[i].RoundTime = arr[i].FinishTime - arr[i].ArriveTime;		//周转时间=完成时间-到达时间
-			arr[i].WeightTime = arr[i].RoundTime / arr[i].ServerTime;		//带权时间=周转时间/服务时间
-		}
-		else {	//当前到达时间在上一个作业结束时间之后
-			arr[i].FinishTime = arr[i].ArriveTime + arr[i].ServerTime;
-			arr[i].RoundTime = arr[i].FinishTime - arr[i].ArriveTime;
-			arr[i].WeightTime = arr[i].RoundTime / arr[i].ServerTime;
-		}
-	}
-	for (int i = 0; i < n; i++) {
-		Show(i);
-		t1 += arr[i].RoundTime;
-		t2 += arr[i].WeightTime;
-	}
-}
-//优先级算法
-void Priority(int n, float& t1, float& t2)
-{
-	PCB temp;
-	arr[0].FinishTime = arr[0].ArriveTime + arr[0].ServerTime;	//完成时间=到达时间+服务时间
-	arr[0].RoundTime = arr[0].FinishTime - arr[0].ArriveTime;	//周转时间=完成时间-提交时间
-	arr[0].WeightTime = arr[0].RoundTime / arr[0].ServerTime;	//带权时间=周转时间/服务时间
-	for (int i = 1; i < n; i++) {
-		for (int j = i; j < n - 1; j++) {
-			for (int k = i + 1; k < n; k++) {
-				if ((arr[i - 1].FinishTime >= arr[j].ArriveTime) && (arr[i - 1].FinishTime >= arr[k].ArriveTime) && (arr[j].ServerTime > arr[k].ServerTime)) {
-					temp = arr[j];
-					arr[j] = arr[k];
-					arr[k] = temp;
-				}
-			}
-		}
-		if (arr[i].ArriveTime < arr[i - 1].FinishTime) {	//当前到达时间在上一个作业结束时间之前
 			arr[i].FinishTime = arr[i - 1].FinishTime + arr[i].ServerTime;	//完成时间=上一个完成时间+服务时间
 			arr[i].RoundTime = arr[i].FinishTime - arr[i].ArriveTime;		//周转时间=完成时间-到达时间
 			arr[i].WeightTime = arr[i].RoundTime / arr[i].ServerTime;		//带权时间=周转时间/服务时间
